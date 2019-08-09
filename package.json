@@ -1,0 +1,19 @@
+{
+  "name": "pwa-practice",
+  "version": "1.0.0",
+  "description": "Building a simple Instagram clone.",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -p 9000 -c-1"
+  },
+  "keywords": [
+    "pwa",
+    "progressive",
+    "web",
+    "app"
+  ],
+  "author": "Mohamed Amin Ben Mbarek",
+  "license": "ISC",
+  "devDependencies": {
+  }
+}
