@@ -1,7 +1,7 @@
 self.addEventListener('install',function(event){
 console.log('From Service worker : Installing the service worker ...',event)
 event.waitUntil(
-    caches.open('app-shell')
+    caches.open('app-shellv2')
     .then(function(cache){
         console.log('From Service worker :Precaching App shell ...')
         cache.addAll([
@@ -29,6 +29,19 @@ event.waitUntil(
 
 self.addEventListener('activate',function(event){
     console.log('From Service worker : Activating the service worker ...',event);
+    event.waitUntil(
+        caches.keys()
+        .then(function(keyList){
+            return Promise.all(
+                keyList.map(function(key){
+                    if(key!=='app-shellv2' && key!=='dynamic'){
+                        console.log('From Service worker : Removing old cache ...',key);
+                        return caches.delete(key);
+
+                    }
+            }))
+        })
+    )
     return self.clients.claim();
     })
 
@@ -38,7 +51,18 @@ self.addEventListener('fetch',function(event){
         const cachedResponse = await caches.match(event.request);
             if(cachedResponse) return cachedResponse;
 
+            //if not present in the cache
              return fetch(event.request)
+             .then(function(res){
+                return caches.open('dynamic')
+                    .then(function(cache){
+                        cache.put(event.request.url,res.clone());
+                        return res;
+                    })
+             })
+             .catch(function(err){
+                
+             })
             }());
 
     })    
