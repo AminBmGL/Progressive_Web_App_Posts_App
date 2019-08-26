@@ -27,7 +27,9 @@ shareImageButton.addEventListener('click', openCreatePostModal);
 
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
-function onSaveButton(event){
+
+//this is not used now , it permits on demand caching
+/* function onSaveButton(event){
 
 if('caches' in window){
 caches.open('userSaves')
@@ -37,7 +39,7 @@ caches.open('userSaves')
   })
 }
 
-}
+} */
 
 function createCard() {
   var cardWrapper = document.createElement('div');
@@ -57,10 +59,10 @@ function createCard() {
   cardSupportingText.className = 'mdl-card__supporting-text';
   cardSupportingText.textContent = 'In San Francisco';
   cardSupportingText.style.textAlign = 'center';
-  var cardSaveButton=document.createElement('button');
+ /*  var cardSaveButton=document.createElement('button');
   cardSaveButton.textContent='Save';
   cardSaveButton.addEventListener('click',onSaveButton)
-  cardSupportingText.appendChild(cardSaveButton);
+  cardSupportingText.appendChild(cardSaveButton); */
   cardWrapper.appendChild(cardSupportingText);
   componentHandler.upgradeElement(cardWrapper);
   sharedMomentsArea.appendChild(cardWrapper);

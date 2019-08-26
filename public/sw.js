@@ -1,4 +1,4 @@
-var CACHE_STATIC_VERSION='app-shellv4';
+var CACHE_STATIC_VERSION='app-shellv5';
 var CACHE_DYNAMIC_VERSION='dynamic';
 
 
@@ -11,6 +11,7 @@ event.waitUntil(
         cache.addAll([
             '/',
             '/index.html',
+            '/offline.html',
             '/src/js/app.js',
             '/src/js/feed.js',
             '/src/js/promise.js',
@@ -60,12 +61,15 @@ self.addEventListener('fetch',function(event){
              .then(function(res){
                 return caches.open(CACHE_DYNAMIC_VERSION)
                     .then(function(cache){
-                       // cache.put(event.request.url,res.clone());
+                        cache.put(event.request.url,res.clone());
                         return res;
                     })
              })
              .catch(function(err){
-                
+                return caches.open(CACHE_STATIC_VERSION)
+                    .then(function(cache){
+                       return cache.match('/offline.html')
+                })
              })
             }());
 
