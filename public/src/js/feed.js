@@ -40,7 +40,11 @@ caches.open('userSaves')
 }
 
 } */
-
+function clearCards(){
+  while(sharedMomentsArea.hasChildNodes()){
+    sharedMomentsArea.removeChild(sharedMomentsArea.lastChild)
+  }
+}
 function createCard() {
   var cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
@@ -68,10 +72,32 @@ function createCard() {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-fetch('https://httpbin.org/get')
+//strategy cache then network : this is the  page part  , and there is also the service worker part
+
+var url ='https://httpbin.org/get';
+var networkDataReceived=false;
+
+fetch(url)
   .then(function(res) {
     return res.json();
   })
   .then(function(data) {
+    networkDataReceived=true;
+    clearCards();
     createCard();
   });
+
+  if('caches' in window){
+    caches.match(url)
+      .then(function(response){
+        if(response){
+          return response.json()
+        }
+      })
+      .then(function(data){
+        if(!networkDataReceived){
+          clearCards();
+          createCard();
+        }
+      })    
+  }

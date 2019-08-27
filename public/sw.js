@@ -1,4 +1,4 @@
-var CACHE_STATIC_VERSION='app-shellv5';
+var CACHE_STATIC_VERSION='app-shellv7';
 var CACHE_DYNAMIC_VERSION='dynamic';
 
 
@@ -51,7 +51,7 @@ self.addEventListener('activate',function(event){
     })
 
     
-self.addEventListener('fetch',function(event){
+/* self.addEventListener('fetch',function(event){
     event.respondWith(async function(){
         const cachedResponse = await caches.match(event.request);
             if(cachedResponse) return cachedResponse;
@@ -74,4 +74,48 @@ self.addEventListener('fetch',function(event){
             }());
 
     })    
+ */
+
+ //cache then network strategy with dynamic caching
+
+    self.addEventListener('fetch',function(event){
+        event.respondWith(
+        caches.open(CACHE_DYNAMIC_VERSION)
+         .then(function(cache){
+            return fetch(event.request)
+            .then(function(response){
+                cache.put(event.request,response.clone())
+                return response;
+            })
+        
+        })        
+         ) 
+        })    
+
+    //  cache only strategy 
     
+    /* self.addEventListener('fetch',function(event){
+        event.respondWith(
+            caches.match(event.request)
+        )
+        })   */
+
+        
+    //  network only strategy 
+    
+    /* self.addEventListener('fetch',function(event){
+        event.respondWith(
+        fetch(event.request)        
+        )
+        })   */
+
+
+        //network first than cache strategy 
+        /* self.addEventListener('fetch',function(event){
+            event.respondWith( 
+               fetch(event.request)
+               .catch(function(err){
+               return caches.match(event.request)
+               })
+            ) 
+        })    */
