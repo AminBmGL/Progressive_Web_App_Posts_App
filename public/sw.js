@@ -1,4 +1,4 @@
-var CACHE_STATIC_VERSION='app-shellv8';
+var CACHE_STATIC_VERSION='app-shellv14';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -125,14 +125,14 @@ self.addEventListener('activate',function(event){
  feed.js part to get the card data , and for the other request we use cahe first then network fallback to keep providing offline support*/
 
     self.addEventListener('fetch',function(event){
-        var url ='https://httpbin.org/get';
+        var url ='https://pwagram-9f355.firebaseio.com/posts';
         if(event.request.url.indexOf(url)> -1){
             event.respondWith(
                 caches.open(CACHE_DYNAMIC_VERSION)
                  .then(function(cache){
                     return fetch(event.request)
                     .then(function(response){
-                        clearCache(CACHE_DYNAMIC_VERSION,9)
+                        clearCache(CACHE_DYNAMIC_VERSION,20)
                         cache.put(event.request,response.clone())
                         return response;
                     })
@@ -154,7 +154,7 @@ self.addEventListener('activate',function(event){
                      .then(function(res){
                         return caches.open(CACHE_DYNAMIC_VERSION)
                             .then(function(cache){
-                                clearCache(CACHE_DYNAMIC_VERSION,9)
+                                clearCache(CACHE_DYNAMIC_VERSION,20)
                                 cache.put(event.request.url,res.clone());
                                 return res;
                             })

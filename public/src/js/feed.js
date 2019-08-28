@@ -18,7 +18,7 @@ function openCreatePostModal() {
   addToScreenPromt=null;
   }
 
-  //getting rid of the service worker code 
+  //code for getting rid of the service worker  
 
  /*  if('serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations()
@@ -28,7 +28,7 @@ function openCreatePostModal() {
       }
     })
   } */
-  
+
 }
 
 function closeCreatePostModal() {
@@ -57,23 +57,42 @@ function clearCards(){
     sharedMomentsArea.removeChild(sharedMomentsArea.lastChild)
   }
 }
-function createCard() {
+
+function updateCardsUi(cards){
+  clearCards();
+  for (let i = 0; i < cards.length; i++) {
+    createCard(cards[i]);
+  }
+}
+
+function trasformResponseToArray(response){
+  var cardsArray=[];
+  for(var key in response){
+    cardsArray.push(response[key]);
+  }
+  return cardsArray;
+}
+
+
+function createCard(data) {
+  console.log(data)
+  console.log(data.image)
   var cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
   var cardTitle = document.createElement('div');
   cardTitle.className = 'mdl-card__title';
-  cardTitle.style.backgroundImage = 'url("/src/images/sf-boat.jpg")';
-  cardTitle.style.backgroundSize = 'cover';
+  cardTitle.style.backgroundImage = 'url(' + data.image + ')';
+  cardTitle.style.backgroundSize = 'cover'; 
   cardTitle.style.height = '180px'; 
   cardWrapper.appendChild(cardTitle);
   var cardTitleTextElement = document.createElement('h2');
   cardTitleTextElement.style.color='white';
   cardTitleTextElement.className = 'mdl-card__title-text';
-  cardTitleTextElement.textContent = 'San Francisco Trip';
+  cardTitleTextElement.textContent = data.title;
   cardTitle.appendChild(cardTitleTextElement);
   var cardSupportingText = document.createElement('div');
   cardSupportingText.className = 'mdl-card__supporting-text';
-  cardSupportingText.textContent = 'In San Francisco';
+  cardSupportingText.textContent = data.location;
   cardSupportingText.style.textAlign = 'center';
  /*  var cardSaveButton=document.createElement('button');
   cardSaveButton.textContent='Save';
@@ -87,7 +106,7 @@ function createCard() {
 //strategy cache then network : this is the  page part  , and there is also the service worker part
 //this strategy is just implemented for the request from the feed.js file for the server to get the updated card data
 
-var url ='https://httpbin.org/get';
+var url ='https://pwagram-9f355.firebaseio.com/posts.json';
 var networkDataReceived=false;
 
 fetch(url)
@@ -96,8 +115,8 @@ fetch(url)
   })
   .then(function(data) {
     networkDataReceived=true;
-    clearCards();
-    createCard();
+    let cardsArray=trasformResponseToArray(data);
+    updateCardsUi(cardsArray);
   });
 
   if('caches' in window){
@@ -109,8 +128,8 @@ fetch(url)
       })
       .then(function(data){
         if(!networkDataReceived){
-          clearCards();
-          createCard();
-        }
+          let cardsArray=trasformResponseToArray(data);
+          updateCardsUi(cardsArray);       
+         }
       })    
   }
