@@ -17,6 +17,8 @@ var STATIC_ASSETS=[
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
   ];
 
+  //helpers functions
+
 // checking if the event request url in part of the precached items
   /* function isInArray(string, array) {
     for (var i = 0; i < array.length; i++) {
@@ -32,7 +34,6 @@ var STATIC_ASSETS=[
 That's not an issue because our final else block picks these URLs up and matches them.
 
 An improvement of the isInArray  method can be: */
-
 function isInArray(string, array) {
   var cachePath;
   if (string.indexOf(self.origin) === 0) { // request targets domain where we serve the page from (i.e. NOT a CDN)
@@ -42,6 +43,22 @@ function isInArray(string, array) {
     cachePath = string; // store the full request (for CDNs)
   }
   return array.indexOf(cachePath) > -1;
+}
+
+
+//clearing dynamic cache
+function clearCache(cacheName,maxItems){
+    caches.open(cacheName)
+    .then(function(cache){
+        return cache.keys()
+        .then(function(keys){
+            if(keys.length>maxItems){
+                cache.delete(keys[0])
+                .then(clearCache(cacheName,maxItems))
+            }
+        })
+    })
+   
 }
 
 
@@ -115,6 +132,7 @@ self.addEventListener('activate',function(event){
                  .then(function(cache){
                     return fetch(event.request)
                     .then(function(response){
+                        clearCache(CACHE_DYNAMIC_VERSION,9)
                         cache.put(event.request,response.clone())
                         return response;
                     })
@@ -136,6 +154,7 @@ self.addEventListener('activate',function(event){
                      .then(function(res){
                         return caches.open(CACHE_DYNAMIC_VERSION)
                             .then(function(cache){
+                                clearCache(CACHE_DYNAMIC_VERSION,9)
                                 cache.put(event.request.url,res.clone());
                                 return res;
                             })
