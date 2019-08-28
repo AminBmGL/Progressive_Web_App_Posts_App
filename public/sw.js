@@ -2,7 +2,7 @@ importScripts('./src/js/idb.js');
 importScripts('./src/js/db.js');
 
 
-var CACHE_STATIC_VERSION='app-shellv17';
+var CACHE_STATIC_VERSION='app-shellv18';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -136,12 +136,17 @@ self.addEventListener('activate',function(event){
                      fetch(event.request)
                     .then(function(response){
                         var clonedResponse=response.clone();
-                        clonedResponse.json()
-                        .then(function(data){
-                            for(var key in data){
-                               writeData('posts',data[key]);
-                            }
+/* we need to clear the storage otherwise if an item in the indexedDB gets deleted from the realtime database , the change will not be reflected in the indexed db because the put method dosen't delete the entry if it is removed from the Realtime database */
+                        deleteAllData('posts')
+                        .then(function(){
+                            clonedResponse.json()
+                            .then(function(data){
+                                for(var key in data){
+                                   writeData('posts',data[key]);
+                                }
+                            })
                         })
+                       
                         return response;
                     })
                  );
