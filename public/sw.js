@@ -17,6 +17,34 @@ var STATIC_ASSETS=[
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
   ];
 
+// checking if the event request url in part of the precached items
+  /* function isInArray(string, array) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i] === string) {
+        return true;
+      }
+    }
+    return false;
+  } */
+
+ /*  This will work fine for full URLs stored in STATIC_FILES  (e.g. the CDN links) but it'll fail for / , /index.html  etc.
+
+That's not an issue because our final else block picks these URLs up and matches them.
+
+An improvement of the isInArray  method can be: */
+
+function isInArray(string, array) {
+  var cachePath;
+  if (string.indexOf(self.origin) === 0) { // request targets domain where we serve the page from (i.e. NOT a CDN)
+    console.log('matched ', string);
+    cachePath = string.substring(self.origin.length); // take the part of the URL AFTER the domain (e.g. after localhost:8080)
+  } else {
+    cachePath = string; // store the full request (for CDNs)
+  }
+  return array.indexOf(cachePath) > -1;
+}
+
+
 self.addEventListener('install',function(event){
 console.log('From Service worker : Installing the service worker ...',event)
 event.waitUntil(
@@ -93,7 +121,7 @@ self.addEventListener('activate',function(event){
                 })        
                  );
                  /* we will implement cache only strategy for just the the static assets (the precached items)*/ 
-        }else if(new RegExp('\\b'+STATIC_ASSETS.join('\\b|\\b')+'\\b').test(event.request.url)){
+        }else if(isInArray(event.request.url,STATIC_ASSETS)){
             event.respondWith(
                 caches.match(event.request)
             )
@@ -119,7 +147,7 @@ self.addEventListener('activate',function(event){
                 /* it dosen't make sens to remplace a css file (for example) that is not found  by the offline.html !
                     we return this page onlyif a principal page is missing (help or root pages )
                 */
-                                if(event.request.url.indexOf('/help')){
+                                if(event.request.headers.get('accept').includes('text/html')){
                                     return cache.match('/offline.html')
                                 }
                         })
