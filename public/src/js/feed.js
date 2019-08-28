@@ -75,8 +75,6 @@ function trasformResponseToArray(response){
 
 
 function createCard(data) {
-  console.log(data)
-  console.log(data.image)
   var cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
   var cardTitle = document.createElement('div');

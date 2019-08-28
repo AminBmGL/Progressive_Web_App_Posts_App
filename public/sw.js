@@ -1,4 +1,6 @@
-var CACHE_STATIC_VERSION='app-shellv14';
+importScripts('./src/js/idb.js');
+
+var CACHE_STATIC_VERSION='app-shellv16';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -6,6 +8,7 @@ var STATIC_ASSETS=[
     '/offline.html',
     '/src/js/app.js',
     '/src/js/feed.js',
+    '/src/js/idb.js',
     '/src/js/promise.js',
     '/src/js/fetch.js',
     '/src/js/material.min.js',
@@ -17,6 +20,11 @@ var STATIC_ASSETS=[
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
   ];
 
+  var indexDbPromise=idb.open('posts-store',1,function(db){
+      if(!db.objectStoreNames.contains('posts')){
+        db.createObjectStore('posts',{keyPath:'id'})
+      }
+  })
   //helpers functions
 
 // checking if the event request url in part of the precached items
@@ -37,7 +45,7 @@ An improvement of the isInArray  method can be: */
 function isInArray(string, array) {
   var cachePath;
   if (string.indexOf(self.origin) === 0) { // request targets domain where we serve the page from (i.e. NOT a CDN)
-    console.log('matched ', string);
+   // console.log('matched ', string);
     cachePath = string.substring(self.origin.length); // take the part of the URL AFTER the domain (e.g. after localhost:8080)
   } else {
     cachePath = string; // store the full request (for CDNs)
@@ -128,15 +136,24 @@ self.addEventListener('activate',function(event){
         var url ='https://pwagram-9f355.firebaseio.com/posts';
         if(event.request.url.indexOf(url)> -1){
             event.respondWith(
-                caches.open(CACHE_DYNAMIC_VERSION)
-                 .then(function(cache){
-                    return fetch(event.request)
+                     fetch(event.request)
                     .then(function(response){
-                        clearCache(CACHE_DYNAMIC_VERSION,20)
-                        cache.put(event.request,response.clone())
+                        var clonedResponse=response.clone();
+                        clonedResponse.json()
+                        .then(function(data){
+                            for(var key in data){
+                                indexDbPromise
+                                .then(function(db){
+                                    var tx=db.transaction('posts','readwrite');
+                                    var store=tx.objectStore('posts');
+                                    store.put(data[key]);
+                                    return tx.complete;
+                                })
+
+                            }
+                        })
                         return response;
                     })
-                })        
                  );
                  /* we will implement cache only strategy for just the the static assets (the precached items)*/ 
         }else if(isInArray(event.request.url,STATIC_ASSETS)){
