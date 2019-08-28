@@ -1,6 +1,21 @@
 var CACHE_STATIC_VERSION='app-shellv8';
 var CACHE_DYNAMIC_VERSION='dynamic';
-
+var STATIC_ASSETS=[
+    '/',
+    '/index.html',
+    '/offline.html',
+    '/src/js/app.js',
+    '/src/js/feed.js',
+    '/src/js/promise.js',
+    '/src/js/fetch.js',
+    '/src/js/material.min.js',
+    '/src/css/app.css',
+    '/src/css/feed.css',
+    '/src/images/main-image.jpg',
+    'https://fonts.googleapis.com/css?family=Roboto:400,700',
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
+  ];
 
 self.addEventListener('install',function(event){
 console.log('From Service worker : Installing the service worker ...',event)
@@ -8,23 +23,7 @@ event.waitUntil(
     caches.open(CACHE_STATIC_VERSION)
     .then(function(cache){
         console.log('From Service worker :Precaching App shell ...')
-        cache.addAll([
-            '/',
-            '/index.html',
-            '/offline.html',
-            '/src/js/app.js',
-            '/src/js/feed.js',
-            '/src/js/promise.js',
-            '/src/js/fetch.js',
-            '/src/js/material.min.js',
-            '/src/css/app.css',
-            '/src/css/feed.css',
-            '/src/images/main-image.jpg',
-            'https://fonts.googleapis.com/css?family=Roboto:400,700',
-            'https://fonts.googleapis.com/icon?family=Material+Icons',
-            'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
-          ]);
-  
+        cache.addAll(STATIC_ASSETS);
 
     },function(err){
         console.log(err)
@@ -92,8 +91,14 @@ self.addEventListener('activate',function(event){
                         return response;
                     })
                 })        
-                 ) 
+                 );
+                 /* we will implement cache only strategy for just the the static assets (the precached items)*/ 
+        }else if(new RegExp('\\b'+STATIC_ASSETS.join('\\b|\\b')+'\\b').test(event.request.url)){
+            event.respondWith(
+                caches.match(event.request)
+            )
         }else{
+            //cache with network fallback strategy for the other urls
             event.respondWith(async function(){
                 const cachedResponse = await caches.match(event.request);
                     if(cachedResponse) return cachedResponse;
@@ -110,7 +115,13 @@ self.addEventListener('activate',function(event){
                      .catch(function(err){
                         return caches.open(CACHE_STATIC_VERSION)
                             .then(function(cache){
-                               return cache.match('/offline.html')
+
+                /* it dosen't make sens to remplace a css file (for example) that is not found  by the offline.html !
+                    we return this page onlyif a principal page is missing (help or root pages )
+                */
+                                if(event.request.url.indexOf('/help')){
+                                    return cache.match('/offline.html')
+                                }
                         })
                      })
                     }());  
