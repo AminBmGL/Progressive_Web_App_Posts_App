@@ -117,17 +117,11 @@ fetch(url)
     updateCardsUi(cardsArray);
   });
 
-  if('caches' in window){
-    caches.match(url)
-      .then(function(response){
-        if(response){
-          return response.json()
-        }
-      })
+  if('indexedDB' in window){
+    readAllData('posts')
       .then(function(data){
         if(!networkDataReceived){
-          let cardsArray=trasformResponseToArray(data);
-          updateCardsUi(cardsArray);       
+          updateCardsUi(data);       
          }
       })    
   }

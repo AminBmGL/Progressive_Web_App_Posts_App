@@ -1,6 +1,8 @@
 importScripts('./src/js/idb.js');
+importScripts('./src/js/db.js');
 
-var CACHE_STATIC_VERSION='app-shellv16';
+
+var CACHE_STATIC_VERSION='app-shellv17';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -20,11 +22,6 @@ var STATIC_ASSETS=[
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
   ];
 
-  var indexDbPromise=idb.open('posts-store',1,function(db){
-      if(!db.objectStoreNames.contains('posts')){
-        db.createObjectStore('posts',{keyPath:'id'})
-      }
-  })
   //helpers functions
 
 // checking if the event request url in part of the precached items
@@ -142,14 +139,7 @@ self.addEventListener('activate',function(event){
                         clonedResponse.json()
                         .then(function(data){
                             for(var key in data){
-                                indexDbPromise
-                                .then(function(db){
-                                    var tx=db.transaction('posts','readwrite');
-                                    var store=tx.objectStore('posts');
-                                    store.put(data[key]);
-                                    return tx.complete;
-                                })
-
+                               writeData('posts',data[key]);
                             }
                         })
                         return response;
