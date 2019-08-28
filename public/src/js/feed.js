@@ -73,6 +73,7 @@ function createCard() {
 }
 
 //strategy cache then network : this is the  page part  , and there is also the service worker part
+//this strategy is just implemented for the request from the feed.js file for the server to get the updated card data
 
 var url ='https://httpbin.org/get';
 var networkDataReceived=false;

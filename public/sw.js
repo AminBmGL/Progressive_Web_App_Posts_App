@@ -1,4 +1,4 @@
-var CACHE_STATIC_VERSION='app-shellv7';
+var CACHE_STATIC_VERSION='app-shellv8';
 var CACHE_DYNAMIC_VERSION='dynamic';
 
 
@@ -50,7 +50,8 @@ self.addEventListener('activate',function(event){
     return self.clients.claim();
     })
 
-    
+    //cache with network fallback staregy
+
 /* self.addEventListener('fetch',function(event){
     event.respondWith(async function(){
         const cachedResponse = await caches.match(event.request);
@@ -71,25 +72,50 @@ self.addEventListener('activate',function(event){
                        return cache.match('/offline.html')
                 })
              })
-            }());
+            }();
 
     })    
  */
 
- //cache then network strategy with dynamic caching
+ /*cache then network strategy with dynamic caching for just the request sent from the 
+ feed.js part to get the card data , and for the other request we use cahe first then network fallback to keep providing offline support*/
 
     self.addEventListener('fetch',function(event){
-        event.respondWith(
-        caches.open(CACHE_DYNAMIC_VERSION)
-         .then(function(cache){
-            return fetch(event.request)
-            .then(function(response){
-                cache.put(event.request,response.clone())
-                return response;
-            })
+        var url ='https://httpbin.org/get';
+        if(event.request.url.indexOf(url)> -1){
+            event.respondWith(
+                caches.open(CACHE_DYNAMIC_VERSION)
+                 .then(function(cache){
+                    return fetch(event.request)
+                    .then(function(response){
+                        cache.put(event.request,response.clone())
+                        return response;
+                    })
+                })        
+                 ) 
+        }else{
+            event.respondWith(async function(){
+                const cachedResponse = await caches.match(event.request);
+                    if(cachedResponse) return cachedResponse;
         
-        })        
-         ) 
+                    //if not present in the cache
+                     return fetch(event.request)
+                     .then(function(res){
+                        return caches.open(CACHE_DYNAMIC_VERSION)
+                            .then(function(cache){
+                                cache.put(event.request.url,res.clone());
+                                return res;
+                            })
+                     })
+                     .catch(function(err){
+                        return caches.open(CACHE_STATIC_VERSION)
+                            .then(function(cache){
+                               return cache.match('/offline.html')
+                        })
+                     })
+                    }());  
+        }
+       
         })    
 
     //  cache only strategy 
