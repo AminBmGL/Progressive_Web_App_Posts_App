@@ -254,4 +254,25 @@ self.addEventListener('activate',function(event){
                 })
             )
         }
-        }) 
+        })
+        
+    self.addEventListener('notificationclick',function(event){
+        var notification=event.notification;
+        var action=event.action;
+
+        console.log(notification)
+
+        if(action==='confirm'){
+            console.log('user confirms notification')
+            notification.close();
+        }else{
+            notification.close();
+        }
+    })
+
+    //listening to the close event (swipping out the notification in android for example)
+
+    self.addEventListener('notificationclose',function(event){
+        //in practice you can inform your server and search after that why your user didn't interact with it
+    console.log('notification was closed ',event.notification)
+    })

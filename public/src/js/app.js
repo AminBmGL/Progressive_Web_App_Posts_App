@@ -34,6 +34,7 @@ if('serviceWorker' in navigator){
             dir:'ltr',
             lang:'en-US',
             badge:'/src/images/icons/app-icon-96x96.png',
+            vibrate:[100,50,200],
             tag:'confirm-notification',
             renotify:true,
             actions:[
