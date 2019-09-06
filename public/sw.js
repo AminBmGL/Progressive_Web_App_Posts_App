@@ -2,7 +2,7 @@ importScripts('./src/js/idb.js');
 importScripts('./src/js/db.js');
 
 
-var CACHE_STATIC_VERSION='app-shellv19';
+var CACHE_STATIC_VERSION='app-shellv21';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -215,3 +215,43 @@ self.addEventListener('activate',function(event){
                })
             ) 
         })    */
+
+        self.addEventListener('sync',function(event){
+        console.log('From Service Worker : Background Synchronization',event)
+        if(event.tag==='sync-new-post'){
+            console.log('From Service Worker : Syncing new posts')
+            event.waitUntil(
+                readAllData('sync-posts')
+                .then(function(posts){
+                    for (const post of posts) {
+                        fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePostData', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                              id: post.id,
+                              title: post.title,
+                              location:post.location,
+                              image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-9f355.appspot.com/o/Sidi%20Bousaid2.jpg?alt=media&token=eececbe6-9d46-4f20-b88c-51a761bfb1ca'
+                            })
+                          })
+                            .then(function(res) {
+                              console.log('Sent data', res);
+                              if(res.ok){
+                                  res.json()
+                                  .then(function(data){
+                                    deleteItemFromStore('sync-posts',data.id)
+
+                                  })
+                              }
+                            })  
+                            .catch(function(err){
+                                console.log('Error while syncing data ',err)
+                            })                
+                          }
+                })
+            )
+        }
+        }) 

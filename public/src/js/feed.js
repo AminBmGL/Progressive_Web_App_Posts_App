@@ -108,6 +108,28 @@ function createCard(data) {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
+function sendDataToBackend(){
+    fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePostData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        id: new Date().toISOString(),
+        title: postTitle.value,
+        location: postLocation.value,
+        image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-9f355.appspot.com/o/Sidi%20Bousaid2.jpg?alt=media&token=eececbe6-9d46-4f20-b88c-51a761bfb1ca'
+      })
+    })
+      .then(function(res) {
+        console.log('Sent data', res);
+        updateCardsUi();
+      })
+  }
+  
+
+
 //strategy cache then network : this is the  page part  , and there is also the service worker part
 //this strategy is just implemented for the request from the feed.js file for the server to get the updated card data
 
@@ -158,12 +180,14 @@ fetch(url)
     .then(function(){
       var snackbarContainer = document.querySelector('#confirmation-toast');
       var data = {message: 'Your Post was saved for syncing!'};
-      snackbarContainer.MaterialSnackback.showSnackbar(data);
+      snackbarContainer.MaterialSnackbar.showSnackbar(data);
     })
     .catch(function(err) {
       console.log(err);
     });
    })
+ }else {
+   sendDataToBackend();
  }
    
   })
