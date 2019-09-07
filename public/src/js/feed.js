@@ -11,7 +11,7 @@ var canvasElement = document.querySelector('#canvas');
 var captureButton = document.querySelector('#capture-btn');
 var imagePicker = document.querySelector('#image-picker');
 var imagePickerArea = document.querySelector('#pick-image');
-
+var pictureFile;
 function initializeMedia() {
 if(!('mediaDevices' in navigator)){
   navigator.mediaDevices={}
@@ -53,6 +53,7 @@ captureButton.addEventListener('click', function(event) {
   videoPlayer.srcObject.getVideoTracks().forEach(function(track) {
     track.stop();
   });
+  pictureFile=dataURItoBlob(canvasElement.toDataURL());
 });
 
 function openCreatePostModal() {
@@ -162,18 +163,15 @@ function createCard(data) {
 }
 
 function sendDataToBackend(){
+  var postData=new FormData();
+  var id =new Date().toISOString();
+    postData.append('id',id);
+    postData.append('title',postTitle.value);
+    postData.append('location',postLocation.value);
+    postData.append('file',pictureFile,id+'.png');
     fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePostData', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        id: new Date().toISOString(),
-        title: postTitle.value,
-        location: postLocation.value,
-        image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-9f355.appspot.com/o/Sidi%20Bousaid2.jpg?alt=media&token=eececbe6-9d46-4f20-b88c-51a761bfb1ca'
-      })
+      body: postData
     })
       .then(function(res) {
         console.log('Sent data', res);
@@ -222,7 +220,8 @@ fetch(url)
     var post ={
       id:new Date().toISOString(),
       title:postTitle.value,
-      location:postLocation.value
+      location:postLocation.value,
+      picture:pictureFile
     };
 
     writeData('sync-posts',post)

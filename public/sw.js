@@ -2,7 +2,7 @@ importScripts('./src/js/idb.js');
 importScripts('./src/js/utilities.js');
 
 
-var CACHE_STATIC_VERSION='app-shellv26';
+var CACHE_STATIC_VERSION='app-shellv27';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -224,18 +224,15 @@ self.addEventListener('activate',function(event){
                 readAllData('sync-posts')
                 .then(function(posts){
                     for (const post of posts) {
+                        var postData=new FormData();
+                        postData.append('id',post.id);
+                        postData.append('title',post.title);
+                        postData.append('location',post.location);
+                        postData.append('file',post.picture,post.id+'.png');
+
                         fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePostData', {
                             method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                              'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                              id: post.id,
-                              title: post.title,
-                              location:post.location,
-                              image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-9f355.appspot.com/o/Sidi%20Bousaid2.jpg?alt=media&token=eececbe6-9d46-4f20-b88c-51a761bfb1ca'
-                            })
+                            body: postData
                           })
                             .then(function(res) {
                               console.log('Sent data', res);
