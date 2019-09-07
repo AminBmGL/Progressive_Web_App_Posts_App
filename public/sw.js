@@ -266,7 +266,23 @@ self.addEventListener('activate',function(event){
             console.log('user confirms notification')
             notification.close();
         }else{
-            notification.close();
+            event.waitUntil(
+                clients.matchAll()
+                .then(function(cls){
+                    var client=cls.find(function(cl){
+                        return cl.visibilityState ==='visible'
+                    })
+
+                    if(client!== undefined){
+                        client.navigate('http://localhost:8080')
+                        client.focus()
+                    }else{
+                        client.openWindow('http://localhost:8080')
+                    }
+                    notification.close();
+
+                })
+            )
         }
     })
 
