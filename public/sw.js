@@ -2,7 +2,7 @@ importScripts('./src/js/idb.js');
 importScripts('./src/js/utilities.js');
 
 
-var CACHE_STATIC_VERSION='app-shellv23';
+var CACHE_STATIC_VERSION='app-shellv24';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
@@ -274,10 +274,13 @@ self.addEventListener('activate',function(event){
                     })
 
                     if(client!== undefined){
-                        client.navigate('http://localhost:8080')
+                        /*You can avoid hardcoding this url and send it from the server in the notification
+                        then after listening to the notification add the url information to the data property of the notification options and then read it here in the click listener .
+                        */
+                        client.navigate('http://localhost:9000')
                         client.focus()
                     }else{
-                        client.openWindow('http://localhost:8080')
+                        client.openWindow('http://localhost:9000')
                     }
                     notification.close();
 
