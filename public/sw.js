@@ -276,3 +276,26 @@ self.addEventListener('activate',function(event){
         //in practice you can inform your server and search after that why your user didn't interact with it
     console.log('notification was closed ',event.notification)
     })
+
+    /* reacting to incoming messages from the server (messages sended to this service worker of this browser of this device)
+    */
+   self.addEventListener('push', function(event) {
+    console.log('Push Notification received', event);
+  
+    var data = {title: 'New!', content: 'Something new happened!'};
+  
+    if (event.data) {
+      data = JSON.parse(event.data.text());
+    }
+  
+    var options = {
+      body: data.content,
+      icon: '/src/images/icons/app-icon-96x96.png',
+      badge: '/src/images/icons/app-icon-96x96.png'
+    };
+  
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
+  });
+  

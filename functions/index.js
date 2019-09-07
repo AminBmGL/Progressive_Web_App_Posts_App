@@ -37,6 +37,8 @@ exports.storePostData = functions.https.onRequest(function(request, response) {
         /* or simply here in our case : var pushConfig = sub.val() ;beacuse they have the same structure 
         It may be not the case when using webpush in some other languages 
         */
+
+        //sending a notification(you can send any stringified Js Object that dosen't pass 4 KB now at least)
         webpush.sendNotification(pushConfig,JSON.stringify({
           title:"New Post",
           content: "A new Post was added "
