@@ -30,6 +30,18 @@ if(!('getUserMedia' in navigator.mediaDevices)){
   })
  }
 }
+
+navigator.mediaDevices.getUserMedia({
+  video:true
+  //audio:true
+})
+.then(function(stream){
+  videoPlayer.srcObject=stream;
+  videoPlayer.style.display="block"
+})
+.catch(function(error){
+  imagePickerArea.style.display="block";
+})
 }
 
 
@@ -66,7 +78,10 @@ function openCreatePostModal() {
 }
 
 function closeCreatePostModal() {
-  createPostArea.style.transform='translateY(100vh)'
+  createPostArea.style.transform='translateY(100vh)';
+  videoPlayer.style.display="none";
+  imagePickerArea.style.display="none";
+  canvasElement.style.display="none";
   //createPostArea.style.display = 'none';
 }
 

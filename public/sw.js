@@ -2,7 +2,7 @@ importScripts('./src/js/idb.js');
 importScripts('./src/js/utilities.js');
 
 
-var CACHE_STATIC_VERSION='app-shellv24';
+var CACHE_STATIC_VERSION='app-shellv26';
 var CACHE_DYNAMIC_VERSION='dynamic';
 var STATIC_ASSETS=[
     '/',
