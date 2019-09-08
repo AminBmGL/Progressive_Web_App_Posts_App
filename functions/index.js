@@ -1,11 +1,24 @@
 
 var functions = require('firebase-functions');
 var admin = require('firebase-admin');
-var cors = require('cors')({origin: true});
+const cors = require('cors')({
+  origin: true
+});
 var webpush=require('web-push');
+var formidable=require('formidable');
+var fs=require('fs');
+var UUID=require('uuid-v4');
 
+var serviceAccount = require('./serviceAccountKey.json');
 
-var serviceAccount = require("./serviceAccountKey.json");
+const {Storage} = require("@google-cloud/storage");
+
+const gcconfig = {
+  projectId: "pwagram-9f355",
+  keyFilename: "serviceAccountKey.json"
+};
+
+const gcs = new Storage(gcconfig);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -13,44 +26,88 @@ admin.initializeApp({
 });
 
 
-exports.storePostData = functions.https.onRequest(function(request, response) {
- cors(request, response, function() {
-   admin.database().ref('posts').push({
-     id: request.body.id,
-     title: request.body.title,
-     location: request.body.location,
-     image: request.body.image
-   })
-     .then(function() {
-      webpush.setVapidDetails('mailto:inggl2023@gmail.com','BJIRbjVjjHlREP3m7owq6q-s3OQD4J6_N6CcMKZcUS8hYUwLHm31NSWRBEjRI_KLUEdLoBhopGseoUW8DXvtYN4','b_-caQy18PcVmSp3s6a9oe2mV1tEMf3uPkP-FjfbPtc');
-      return admin.database().ref('subscriptions').once('value');
-     })
-     .then(function(subs){
-      subs.forEach(function(sub) {
-        var pushConfig={
-          endpoint:sub.val().endpoint,
-          keys:{
-            auth:sub.val().keys.auth,
-            p256dh:sub.val().keys.p256dh,
-          }
-        }
-        /* or simply here in our case : var pushConfig = sub.val() ;beacuse they have the same structure 
-        It may be not the case when using webpush in some other languages 
-        */
 
-        //sending a notification(you can send any stringified Js Object that dosen't pass 4 KB now at least)
-        webpush.sendNotification(pushConfig,JSON.stringify({
-          title:"New Post",
-          content: "A new Post was added "
-        }))
-        .catch(function(err){
-          console.log(err)
-        })
-      });
-      response.status(201).json({message: 'Data stored', id: request.body.id});
-     })
-     .catch(function(err) {
-       response.status(500).json({error: err});
-     });
- });
+
+exports.storePosts = functions.https.onRequest(function (request, response) {
+  return cors(request, response, function () {
+     var uuid = UUID();
+     var formData = new formidable.IncomingForm();
+     formData.parse(request, function(err, fields, files) {
+     /*
+     security mecanism to ensure that the uploaded files dosen't get cleaned up while we are processing it : we move it to the folder /tmp of firebase cloud storage before we permanently store it 
+     */
+
+     
+    if(files && files.file &&files.file.path && files.file.name){
+     fs.rename(files.file.path, '/tmp/' + files.file.name);
+
+         var bucket=gcs.bucket('pwagram-9f355.appspot.com');
+         bucket.upload('/tmp'+files.file.name,{
+           uploadType:'media',
+           metadata:{
+             metadata:{
+               contentType:files.file.type,
+               firebaseStorageDownloadTokens:uuid
+             }
+           }
+         },function(err,file){
+         if(err){
+           console.log("Error when uploading" ,err)
+         }else{
+           admin.database().ref('posts').push({
+             id: fields.id,
+             title: fields.title,
+             location: fields.location,
+             rawLocation:{
+               lat:fields.locationLat,
+               lng:locationLng
+             },
+             image:  'https://firebasestorage.googleapis.com/v0/b/' + bucket.name + '/o/' + encodeURIComponent(file.name) + '?alt=media&token=' + uuid
+
+           })
+           .then(function() {
+             webpush.setVapidDetails('mailto:inggl2023@gmail.com','BJIRbjVjjHlREP3m7owq6q-s3OQD4J6_N6CcMKZcUS8hYUwLHm31NSWRBEjRI_KLUEdLoBhopGseoUW8DXvtYN4','b_-caQy18PcVmSp3s6a9oe2mV1tEMf3uPkP-FjfbPtc');
+             return admin.database().ref('subscriptions').once('value');
+             })
+             .then(function(subs){
+             subs.forEach(function(sub) {
+               var pushConfig={
+                 endpoint:sub.val().endpoint,
+                 keys:{
+                   auth:sub.val().keys.auth,
+                   p256dh:sub.val().keys.p256dh,
+                 }
+               }
+               /* or simply here in our case : var pushConfig = sub.val() ;beacuse they have the same structure 
+               It may be not the case when using webpush in some other languages 
+               */
+
+               //sending a notification(you can send any stringified Js Object that dosen't pass 4 KB now at least)
+               
+             
+               webpush.sendNotification(pushConfig,JSON.stringify({
+                 title:"New Post",
+                 content: "A new Post was added "
+               }))
+               .catch(function(err){
+                 console.log(err)
+               })
+             });
+             response.status(201).json({message: 'Data stored', id: fields.id});
+             })
+             .catch(function(err) {
+               response.status(500).json({error: err});
+             });
+         }
+         });
+        }else{
+         response.status(400).json({error: "Bad request"});
+       } 
+        
+       });
+       
 });
+});
+
+
+

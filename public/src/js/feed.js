@@ -12,6 +12,40 @@ var captureButton = document.querySelector('#capture-btn');
 var imagePicker = document.querySelector('#image-picker');
 var imagePickerArea = document.querySelector('#pick-image');
 var pictureFile;
+var locationBtn = document.querySelector('#location-btn');
+var locationLoader = document.querySelector('#location-loader');
+var fetchedLocation = {lat: 0, lng: 0};
+
+locationBtn.addEventListener('click', function(event) {
+  if (!('geolocation' in navigator)) {
+    return;
+  }
+  var sawAlert = false;
+
+  locationBtn.style.display = 'none';
+  locationLoader.style.display = 'block';
+
+  navigator.geolocation.getCurrentPosition(function(position) {
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+
+    //Todo : fetch  the address from google maps api
+    postLocation.value = 'In tunisia';
+    document.querySelector('#manual-location').classList.add('is-focused');
+  }, function(err) {
+    console.log(err);
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    if (!sawAlert) {
+      alert('Couldn\'t fetch location, please enter manually!');
+      sawAlert = true;
+    }
+    fetchedLocation = {lat: 0, lng: 0};
+  }, {timeout: 8000});
+});
+
+
 function initializeMedia() {
 if(!('mediaDevices' in navigator)){
   navigator.mediaDevices={}
@@ -56,6 +90,10 @@ captureButton.addEventListener('click', function(event) {
   pictureFile=dataURItoBlob(canvasElement.toDataURL());
 });
 
+imagePicker.addEventListener('change', function(event) {
+  picture = event.target.files[0];
+});
+
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
   setTimeout(function(){
@@ -89,10 +127,20 @@ function openCreatePostModal() {
 }
 
 function closeCreatePostModal() {
-  createPostArea.style.transform='translateY(100vh)';
   videoPlayer.style.display="none";
   imagePickerArea.style.display="none";
   canvasElement.style.display="none";
+  locationBtn.style.display = 'inline';
+  locationLoader.style.display = 'none';
+  captureButton.style.display='inline';
+  if(videoPlayer.srcObject){
+    videoPlayer.srcObject.getVideoTracks().forEach(function(track) {
+      track.stop();
+    });
+  }
+  setTimeout(function(){
+    createPostArea.style.transform='translateY(100vh)';
+  },1)
   //createPostArea.style.display = 'none';
 }
 
@@ -169,7 +217,11 @@ function sendDataToBackend(){
     postData.append('title',postTitle.value);
     postData.append('location',postLocation.value);
     postData.append('file',pictureFile,id+'.png');
-    fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePostData', {
+    postData.append('locationLat',fetchedLocation.lat);
+    postData.append('locationLng',fetchedLocation.lng);
+
+
+    fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePosts', {
       method: 'POST',
       body: postData
     })
@@ -221,7 +273,8 @@ fetch(url)
       id:new Date().toISOString(),
       title:postTitle.value,
       location:postLocation.value,
-      picture:pictureFile
+      picture:pictureFile,
+      rawLocation:fetchedLocation
     };
 
     writeData('sync-posts',post)

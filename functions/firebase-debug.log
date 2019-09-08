@@ -1,0 +1,36 @@
+[debug] [2019-09-07T23:01:55.452Z] ----------------------------------------------------------------------
+[debug] [2019-09-07T23:01:55.455Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\medam\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2019-09-07T23:01:55.456Z] CLI Version:   7.3.1
+[debug] [2019-09-07T23:01:55.456Z] Platform:      win32
+[debug] [2019-09-07T23:01:55.456Z] Node Version:  v8.9.4
+[debug] [2019-09-07T23:01:55.456Z] Time:          Sun Sep 08 2019 00:01:55 GMT+0100 (GMT Daylight Time)
+[debug] [2019-09-07T23:01:55.457Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-09-07T23:01:55.467Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-09-07T23:01:55.467Z] > authorizing via signed-in user
+[debug] [2019-09-07T23:01:55.468Z] [iam] checking project pwagram-9f355 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2019-09-07T23:01:55.470Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pwagram-9f355:testIamPermissions  
+
+[debug] [2019-09-07T23:01:55.543Z] Error: getaddrinfo ENOTFOUND cloudresourcemanager.googleapis.com cloudresourcemanager.googleapis.com:443
+    at errnoException (dns.js:50:10)
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)
+[error] 
+[error] Error: Server Error. getaddrinfo ENOTFOUND cloudresourcemanager.googleapis.com cloudresourcemanager.googleapis.com:443
+[debug] [2019-09-07T23:03:00.167Z] ----------------------------------------------------------------------
+[debug] [2019-09-07T23:03:00.170Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\medam\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2019-09-07T23:03:00.170Z] CLI Version:   7.3.1
+[debug] [2019-09-07T23:03:00.171Z] Platform:      win32
+[debug] [2019-09-07T23:03:00.171Z] Node Version:  v8.9.4
+[debug] [2019-09-07T23:03:00.171Z] Time:          Sun Sep 08 2019 00:03:00 GMT+0100 (GMT Daylight Time)
+[debug] [2019-09-07T23:03:00.171Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-09-07T23:03:00.183Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-09-07T23:03:00.184Z] > authorizing via signed-in user
+[debug] [2019-09-07T23:03:00.184Z] [iam] checking project pwagram-9f355 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2019-09-07T23:03:00.189Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pwagram-9f355:testIamPermissions  
+
+[debug] [2019-09-07T23:03:00.270Z] Error: getaddrinfo ENOTFOUND cloudresourcemanager.googleapis.com cloudresourcemanager.googleapis.com:443
+    at errnoException (dns.js:50:10)
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)
+[error] 
+[error] Error: Server Error. getaddrinfo ENOTFOUND cloudresourcemanager.googleapis.com cloudresourcemanager.googleapis.com:443

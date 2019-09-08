@@ -2,8 +2,8 @@ importScripts('./src/js/idb.js');
 importScripts('./src/js/utilities.js');
 
 
-var CACHE_STATIC_VERSION='app-shellv27';
-var CACHE_DYNAMIC_VERSION='dynamic';
+var CACHE_STATIC_VERSION='app-shellv34';
+var CACHE_DYNAMIC_VERSION='dynamicv3';
 var STATIC_ASSETS=[
     '/',
     '/index.html',
@@ -34,11 +34,12 @@ var STATIC_ASSETS=[
     return false;
   } */
 
- /*  This will work fine for full URLs stored in STATIC_FILES  (e.g. the CDN links) but it'll fail for / , /index.html  etc.
+ /*  This will work fine for full URLs stored in STATIC_FILES  (e.g. the CDN links) but it'll fail for / , 
+ /index.html  etc.
 
-That's not an issue because our final else block picks these URLs up and matches them.
+That's not an issue because our final else block picks these URLs up and matches them.*/
 
-An improvement of the isInArray  method can be: */
+//An improvement of the isInArray  method can be: 
 function isInArray(string, array) {
   var cachePath;
   if (string.indexOf(self.origin) === 0) { // request targets domain where we serve the page from (i.e. NOT a CDN)
@@ -223,14 +224,15 @@ self.addEventListener('activate',function(event){
             event.waitUntil(
                 readAllData('sync-posts')
                 .then(function(posts){
-                    for (const post of posts) {
+                    for (var post of posts) {
                         var postData=new FormData();
                         postData.append('id',post.id);
                         postData.append('title',post.title);
                         postData.append('location',post.location);
                         postData.append('file',post.picture,post.id+'.png');
-
-                        fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePostData', {
+                        postData.append('locationLat',post.rawLocation.lat);
+                        postData.append('locationLg',post.rawLocation.lng);
+                        fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePosts', {
                             method: 'POST',
                             body: postData
                           })
