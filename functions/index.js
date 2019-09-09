@@ -29,14 +29,16 @@ admin.initializeApp({
 
 
 exports.storePosts = functions.https.onRequest(function (request, response) {
-  return cors(request, response, function () {
+   cors(request, response, function () {
      var uuid = UUID();
      var formData = new formidable.IncomingForm();
      formData.parse(request, function(err, fields, files) {
      /*
      security mecanism to ensure that the uploaded files dosen't get cleaned up while we are processing it : we move it to the folder /tmp of firebase cloud storage before we permanently store it 
      */
-
+    if(err){
+      return  response.status(500).json({error: err});
+    }
      
     if(files && files.file &&files.file.path && files.file.name){
      fs.rename(files.file.path, '/tmp/' + files.file.name);
@@ -101,7 +103,7 @@ exports.storePosts = functions.https.onRequest(function (request, response) {
          }
          });
         }else{
-         response.status(400).json({error: "Bad request"});
+         return response.status(400).json({error: "Bad request"});
        } 
         
        });
