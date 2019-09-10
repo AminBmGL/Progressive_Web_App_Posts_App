@@ -1,30 +1,49 @@
-/**
- * Welcome to your Workbox-powered service worker!
- *
- * You'll need to register this file in your web app and you should
- * disable HTTP caching for this file too.
- * See https://goo.gl/nhQhGp
- *
- * The rest of the code is auto-generated. Please don't update this file
- * directly; instead, make changes to your Workbox build configuration
- * and re-run your build process.
- * See https://goo.gl/2aRDsh
- */
-
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
+importScripts('./src/js/idb.js');
+importScripts('./src/js/utilities.js');
 
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+  workbox.routing.registerRoute(/.*(?:firebasestorage\.googleapis)\.com.*$/,
+  new workbox.strategies.StaleWhileRevalidate({
+   cacheName: 'post-images'
+  }));
+
+  workbox.routing.registerRoute(/.*(?:googleapis|gstatic)\.com.*$/,new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'google-fonts',
+    plugins: [
+        new workbox.expiration.Plugin({
+          maxEntries: 20,
+          maxAgeSeconds: 24 * 60 * 60,
+        }),
+      ], 
+    
+  }));
+  
+  workbox.routing.registerRoute('https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css', new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'material-css'
+  }));
+
+  workbox.routing.registerRoute('https://pwagram-9f355.firebaseio.com/posts.json', function(args){
+      return fetch(args.event.request)
+      .then(function(response){
+          var clonedResponse=response.clone();
+            /* we need to clear the storage otherwise if an item in the indexedDB gets deleted from the realtime database , the change will not be reflected in the indexed db because the put method dosen't delete the entry if it is removed from the Realtime database */
+          deleteAllData('posts')
+          .then(function(){
+              clonedResponse.json()
+              .then(function(data){
+                  for(var key in data){
+                     writeData('posts',data[key]);
+                  }
+              })
+          })
+         
+          return response;
+  });
 });
+  
 
-/**
- * The workboxSW.precacheAndRoute() method efficiently caches and responds to
- * requests for URLs in the manifest.
- * See https://goo.gl/S9QRab
- */
-self.__precacheManifest = [
+  
+  workbox.precaching.precacheAndRoute([
   {
     "url": "404.html",
     "revision": "0a27a4163254fc8fce870c8cc3a3f94f"
@@ -59,7 +78,7 @@ self.__precacheManifest = [
   },
   {
     "url": "src/js/app.js",
-    "revision": "7d5d7eae6885eb0d21feaf999d79db56"
+    "revision": "8efe063b3b8eabb781978d62a5efd52a"
   },
   {
     "url": "src/js/feed.js",
@@ -86,8 +105,12 @@ self.__precacheManifest = [
     "revision": "ea8ca2585161857f80207201119a801a"
   },
   {
+    "url": "sw-base.js",
+    "revision": "00fdffd27e630d5134e71f7238c25a78"
+  },
+  {
     "url": "sw.js",
-    "revision": "d940842551920b664933e741d91b54a6"
+    "revision": "625946117e1477d538bb39fcd4976122"
   },
   {
     "url": "src/images/main-image-lg.jpg",
@@ -105,5 +128,4 @@ self.__precacheManifest = [
     "url": "src/images/sf-boat.jpg",
     "revision": "0f282d64b0fb306daf12050e812d6a19"
   }
-].concat(self.__precacheManifest || []);
-workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
+], {});

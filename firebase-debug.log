@@ -1,0 +1,116 @@
+[debug] [2019-09-09T18:30:44.911Z] ----------------------------------------------------------------------
+[debug] [2019-09-09T18:30:44.914Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\medam\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2019-09-09T18:30:44.914Z] CLI Version:   7.3.1
+[debug] [2019-09-09T18:30:44.914Z] Platform:      win32
+[debug] [2019-09-09T18:30:44.914Z] Node Version:  v8.9.4
+[debug] [2019-09-09T18:30:44.915Z] Time:          Mon Sep 09 2019 19:30:44 GMT+0100 (GMT Daylight Time)
+[debug] [2019-09-09T18:30:44.915Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-09-09T18:30:44.959Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-09-09T18:30:44.959Z] > authorizing via signed-in user
+[debug] [2019-09-09T18:30:44.959Z] [iam] checking project pwagram-9f355 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2019-09-09T18:30:44.962Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-09-09T18:30:44.963Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-09-09T18:30:47.156Z] <<< HTTP RESPONSE 200
+[debug] [2019-09-09T18:30:47.201Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pwagram-9f355:testIamPermissions  
+
+[debug] [2019-09-09T18:30:48.383Z] <<< HTTP RESPONSE 200
+[debug] [2019-09-09T18:30:48.385Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pwagram-9f355  
+ 
+[debug] [2019-09-09T18:30:48.893Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'pwagram-9f355'...
+[info] 
+[info] i  deploying functions, hosting
+[debug] [2019-09-09T18:30:57.311Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "web-push": "web-push"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^3.2.1",
+    "cors": "^2.8.5",
+    "firebase-admin": "^8.4.0",
+    "firebase-functions": "^3.1.0",
+    "formidable-serverless": "^1.0.2",
+    "uuid-v4": "^0.1.0",
+    "web-push": "^3.3.5"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^0.1.6"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2019-09-09T18:30:57.313Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pwagram-9f355/services/cloudfunctions.googleapis.com  
+ 
+[debug] [2019-09-09T18:30:57.314Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pwagram-9f355/services/runtimeconfig.googleapis.com  
+ 
+[debug] [2019-09-09T18:30:58.475Z] <<< HTTP RESPONSE 200
+[debug] [2019-09-09T18:30:58.537Z] <<< HTTP RESPONSE 200
+[info] +  functions: all necessary APIs are enabled
+[debug] [2019-09-09T18:30:58.539Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pwagram-9f355/adminSdkConfig  
+ 
+[debug] [2019-09-09T18:30:58.882Z] <<< HTTP RESPONSE 200
+[debug] [2019-09-09T18:30:58.884Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/pwagram-9f355/versions  
+
+[debug] [2019-09-09T18:31:00.722Z] <<< HTTP RESPONSE 502
+[debug] [2019-09-09T18:31:00.722Z] <<< HTTP RESPONSE BODY <!DOCTYPE html>
+<html lang=en>
+  <meta charset=utf-8>
+  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">
+  <title>Error 502 (Server Error)!!1</title>
+  <style>
+    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/branding/googlelogo/1x/googlelogo_color_150x54dp.png) no-repeat;margin-left:-5px}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:54px;width:150px}
+  </style>
+  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>
+  <p><b>502.</b> <ins>That’s an error.</ins>
+  <p>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.  <ins>That’s all we know.</ins>
+
+[error] 
+[error] Error: HTTP Error: 502, Unknown Error
+[debug] [2019-09-09T18:31:00.727Z] Error Context: {
+  "body": {
+    "error": {
+      "message": "Unknown Error"
+    }
+  },
+  "response": {
+    "statusCode": 502,
+    "body": "<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content=\"initial-scale=1, minimum-scale=1, width=device-width\">\n  <title>Error 502 (Server Error)!!1</title>\n  <style>\n    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/branding/googlelogo/1x/googlelogo_color_150x54dp.png) no-repeat;margin-left:-5px}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:54px;width:150px}\n  </style>\n  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>\n  <p><b>502.</b> <ins>That’s an error.</ins>\n  <p>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.  <ins>That’s all we know.</ins>\n",
+    "headers": {
+      "content-type": "text/html; charset=UTF-8",
+      "referrer-policy": "no-referrer",
+      "content-length": "1613",
+      "date": "Mon, 09 Sep 2019 18:31:00 GMT",
+      "alt-svc": "quic=\":443\"; ma=2592000; v=\"46,43,39\""
+    },
+    "request": {
+      "uri": {
+        "protocol": "https:",
+        "slashes": true,
+        "auth": null,
+        "host": "firebasehosting.googleapis.com",
+        "port": 443,
+        "hostname": "firebasehosting.googleapis.com",
+        "hash": null,
+        "search": null,
+        "query": null,
+        "pathname": "/v1beta1/sites/pwagram-9f355/versions",
+        "path": "/v1beta1/sites/pwagram-9f355/versions",
+        "href": "https://firebasehosting.googleapis.com/v1beta1/sites/pwagram-9f355/versions"
+      },
+      "method": "POST"
+    }
+  }
+}

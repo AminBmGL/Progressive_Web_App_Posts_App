@@ -231,7 +231,9 @@ self.addEventListener('activate',function(event){
                         postData.append('location',post.location);
                         postData.append('file',post.picture,post.id+'.png');
                         postData.append('locationLat',post.rawLocation.lat);
-                        postData.append('locationLg',post.rawLocation.lng);
+                        postData.append('locationLng',post.rawLocation.lng);
+
+                       
                         fetch('https://us-central1-pwagram-9f355.cloudfunctions.net/storePosts', {
                             method: 'POST',
                             body: postData
